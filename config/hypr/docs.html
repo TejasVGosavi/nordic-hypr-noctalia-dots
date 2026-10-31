@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nordic Glass // Hyprland v0.56.2 & Noctalia v5 Manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Official Nord Palette */
+      --polar-0: #2E3440;
+      --polar-1: #3B4252;
+      --polar-2: #434C5E;
+      --polar-3: #4C566A;
+      --snow-0:  #D8DEE9;
+      --snow-1:  #E5E9F0;
+      --snow-2:  #ECEFF4;
+      --frost-0: #8FBCBB;
+      --frost-1: #88C0D0;
+      --frost-2: #81A1C1;
+      --frost-3: #5E81AC;
+      --aurora-red:    #BF616A;
+      --aurora-orange: #D08770;
+      --aurora-yellow: #EBCB8B;
+      --aurora-green:  #A3BE8C;
+      --aurora-purple: #B48EAD;
+
+      /* Frosted Glass & Caelestia Geometry */
+      --glass-bg: rgba(46, 52, 64, 0.78);
+      --glass-card: rgba(59, 66, 82, 0.64);
+      --glass-pill: rgba(67, 76, 94, 0.88);
+      --border-subtle: rgba(136, 192, 208, 0.22);
+      --radius-win: 12px;
+      --radius-bar: 16px;
+      --radius-pill: 999px;
+      --shadow-deep: 0 12px 32px rgba(18, 22, 30, 0.6);
+      --bezier-overshoot: cubic-bezier(0.12, 1.18, 0.22, 1.02);
+      --bezier-fluid: cubic-bezier(0.15, 1.0, 0.25, 1.0);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 68px;
+    }
+
+    body {
+      background-color: #191d24;
+      background-image:
+        radial-gradient(circle at 12% 15%, rgba(136, 192, 208, 0.14) 0%, transparent 40%),
+        radial-gradient(circle at 88% 22%, rgba(94, 129, 172, 0.18) 0%, transparent 45%),
+        radial-gradient(circle at 50% 85%, rgba(143, 188, 187, 0.10) 0%, transparent 50%),
+        linear-gradient(160deg, #1e222a 0%, #2E3440 55%, #181c24 100%);
+      background-attachment: fixed;
+      color: var(--snow-0);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      padding: 64px 18px 96px;
+      min-height: 100vh;
+    }
+
+    code, pre, kbd, .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* =================================================================
+       SIMULATED FLOATING NOCTALIA v5 TOP BAR (margin_edge=8, margin_ends=12)
+       ================================================================= */
+    .noctalia-bar {
+      position: fixed;
+      top: 8px;
+      left: 12px;
+      right: 12px;
+      height: 38px;
+      background: rgba(46, 52, 64, 0.76);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(136, 192, 208, 0.28);
+      border-radius: var(--radius-bar);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8px;
+      z-index: 1000;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      user-select: none;
+    }
+
+    .bar-lane {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .capsule {
+      background: var(--glass-pill);
+      border: 1px solid rgba(136, 192, 208, 0.25);
+      border-radius: var(--radius-pill);
+      padding: 3px 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--snow-1);
+      text-decoration: none;
+      transition: transform 0.25s var(--bezier-overshoot), border-color 0.2s;
+    }
+
+    .capsule:hover {
+      border-color: var(--frost-1);
+      transform: translateY(-1px);
+    }
+
+    .ws-pills {
+      display: flex;
+      gap: 3px;
+      background: rgba(59, 66, 82, 0.88);
+      padding: 2px 5px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(136, 192, 208, 0.25);
+    }
+
+    .ws-pill {
+      padding: 1px 8px;
+      border-radius: var(--radius-pill);
+      color: var(--snow-0);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.25s var(--bezier-overshoot);
+    }
+
+    .ws-pill:hover, .ws-pill.active {
+      background: var(--frost-1);
+      color: var(--polar-0);
+    }
+
+    .sysmon-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(59, 66, 82, 0.9);
+      border: 1px solid rgba(136, 192, 208, 0.28);
+      border-radius: var(--radius-pill);
+      padding: 3px 12px;
+      color: var(--snow-2);
+    }
+
+    .stat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-chip span {
+      color: var(--frost-1);
+      font-weight: 700;
+    }
+
+    /* =================================================================
+       SIMULATED FLOATING BOTTOM DOCK
+       ================================================================= */
+    .noctalia-dock {
+      position: fixed;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(46, 52, 64, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(136, 192, 208, 0.3);
+      border-radius: 18px;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 1000;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+    }
+
+    .dock-item {
+      background: var(--polar-1);
+      border: 1px solid rgba(136, 192, 208, 0.22);
+      color: var(--snow-2);
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 12px;
+      transition: transform 0.22s var(--bezier-overshoot), background 0.2s, border-color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dock-item:hover {
+      transform: translateY(-5px) scale(1.12);
+      background: var(--frost-1);
+      color: var(--polar-0);
+      border-color: var(--snow-2);
+    }
+
+    /* =================================================================
+       MAIN CONTAINER & HYPRLAND WINDOW CARDS
+       ================================================================= */
+    .workspace-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .hypr-window {
+      position: relative;
+      background: var(--glass-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: var(--radius-win);
+      padding: 26px;
+      box-shadow: var(--shadow-deep);
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      transition: transform 0.3s var(--bezier-fluid), border-color 0.25s;
+    }
+
+    .hypr-window::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: calc(var(--radius-win) + 2px);
+      padding: 2px;
+      background: linear-gradient(45deg, var(--frost-1), var(--frost-3));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    .hypr-window.inactive::before {
+      background: var(--polar-2);
+      opacity: 0.75;
+    }
+
+    .hypr-window.inactive:hover::before {
+      background: linear-gradient(45deg, var(--frost-1), var(--frost-3));
+      opacity: 1;
+    }
+
+    /* =================================================================
+       HERO HEADER
+       ================================================================= */
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      background: rgba(136, 192, 208, 0.14);
+      color: var(--frost-1);
+      border: 1px solid rgba(136, 192, 208, 0.35);
+    }
+
+    .badge.green {
+      background: rgba(163, 190, 140, 0.15);
+      color: var(--aurora-green);
+      border-color: rgba(163, 190, 140, 0.4);
+    }
+
+    .badge.purple {
+      background: rgba(180, 142, 173, 0.16);
+      color: var(--aurora-purple);
+      border-color: rgba(180, 142, 173, 0.4);
+    }
+
+    h1 {
+      font-size: 2.05rem;
+      font-weight: 700;
+      color: var(--snow-2);
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+
+    h1 span {
+      background: linear-gradient(90deg, var(--frost-0), var(--frost-1), var(--frost-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      color: var(--snow-0);
+      font-size: 0.95rem;
+      margin-bottom: 18px;
+      opacity: 0.94;
+    }
+
+    .quick-cmd-box {
+      background: rgba(35, 40, 49, 0.94);
+      border: 1px solid var(--polar-3);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.8rem;
+    }
+
+    .cmd-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px dashed rgba(76, 86, 106, 0.6);
+    }
+
+    .cmd-line:last-child {
+      border-bottom: none;
+    }
+
+    .cmd-line code {
+      color: var(--frost-1);
+      word-break: break-all;
+    }
+
+    .copy-btn {
+      background: var(--polar-2);
+      color: var(--snow-1);
+      border: 1px solid var(--polar-3);
+      border-radius: 6px;
+      padding: 3px 9px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--frost-1);
+      color: var(--polar-0);
+      border-color: var(--frost-1);
+    }
+
+    /* =================================================================
+       SECTION HEADINGS
+       ================================================================= */
+    .section-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(136, 192, 208, 0.2);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.32rem;
+      color: var(--snow-2);
+      font-weight: 700;
+    }
+
+    .section-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      background: var(--frost-3);
+      color: var(--snow-2);
+      padding: 2px 10px;
+      border-radius: var(--radius-pill);
+    }
+
+    /* =================================================================
+       KEYBINDS EXPLORER & FILTER CONTROLS
+       ================================================================= */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .search-input-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(35, 40, 49, 0.92);
+      border: 1px solid var(--polar-3);
+      border-radius: var(--radius-pill);
+      padding: 9px 16px;
+      color: var(--snow-2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.84rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--frost-1);
+      box-shadow: 0 0 0 3px rgba(136, 192, 208, 0.2);
+    }
+
+    .category-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .cat-btn {
+      background: var(--polar-1);
+      color: var(--snow-0);
+      border: 1px solid var(--polar-3);
+      border-radius: var(--radius-pill);
+      padding: 6px 13px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      cursor: pointer;
+      transition: all 0.2s var(--bezier-overshoot);
+    }
+
+    .cat-btn:hover, .cat-btn.active {
+      background: var(--frost-1);
+      color: var(--polar-0);
+      border-color: var(--frost-1);
+      font-weight: 700;
+      transform: scale(1.03);
+    }
+
+    .keybind-table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 12px 14px;
+      background: rgba(35, 40, 49, 0.9);
+      color: var(--frost-1);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid var(--polar-3);
+    }
+
+    td {
+      padding: 11px 14px;
+      border-bottom: 1px solid rgba(76, 86, 106, 0.45);
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background: rgba(136, 192, 208, 0.06);
+    }
+
+    kbd {
+      display: inline-block;
+      background: linear-gradient(180deg, #434C5E 0%, #3B4252 100%);
+      color: var(--snow-2);
+      border: 1px solid var(--frost-2);
+      border-bottom: 3px solid #232831;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin: 0 2px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    kbd.mod {
+      background: linear-gradient(180deg, var(--frost-1) 0%, var(--frost-2) 100%);
+      color: var(--polar-0);
+      border-color: var(--snow-2);
+      border-bottom-color: var(--frost-3);
+    }
+
+    .dispatcher-code {
+      background: rgba(35, 40, 49, 0.9);
+      padding: 3px 8px;
+      border-radius: 5px;
+      color: var(--aurora-green);
+      font-size: 0.76rem;
+      border: 1px solid rgba(163, 190, 140, 0.25);
+      display: inline-block;
+    }
+
+    /* =================================================================
+       GRIDS & CARDS
+       ================================================================= */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 16px;
+    }
+
+    .sub-card {
+      background: var(--glass-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sub-card h3 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.94rem;
+      color: var(--frost-1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .file-path {
+      font-size: 0.71rem;
+      color: var(--aurora-yellow);
+      background: rgba(235, 203, 139, 0.12);
+      border: 1px solid rgba(235, 203, 139, 0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .plugin-tag {
+      font-size: 0.7rem;
+      color: var(--aurora-purple);
+      background: rgba(180, 142, 173, 0.14);
+      border: 1px solid rgba(180, 142, 173, 0.35);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .sub-card p {
+      font-size: 0.86rem;
+      color: var(--snow-0);
+    }
+
+    pre.code-block {
+      background: #1e222a;
+      border: 1px solid var(--polar-3);
+      border-radius: 8px;
+      padding: 12px 14px;
+      overflow-x: auto;
+      font-size: 0.77rem;
+      line-height: 1.5;
+      color: var(--snow-1);
+    }
+
+    .kw { color: var(--frost-2); font-weight: bold; }
+    .fn { color: var(--frost-1); }
+    .str { color: var(--aurora-green); }
+    .num { color: var(--aurora-purple); }
+    .cmt { color: #616E88; font-style: italic; }
+
+    /* =================================================================
+       NORD PALETTE SWATCHES
+       ================================================================= */
+    .swatch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+      gap: 12px;
+    }
+
+    .swatch {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--polar-3);
+      background: var(--polar-1);
+      cursor: pointer;
+      transition: transform 0.2s var(--bezier-overshoot), border-color 0.2s;
+    }
+
+    .swatch:hover {
+      transform: translateY(-4px);
+      border-color: var(--frost-1);
+    }
+
+    .swatch-color {
+      height: 52px;
+      width: 100%;
+    }
+
+    .swatch-info {
+      padding: 8px 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.73rem;
+    }
+
+    .swatch-name {
+      font-weight: 700;
+      color: var(--snow-2);
+      display: block;
+    }
+
+    .swatch-hex {
+      color: var(--frost-1);
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 68px;
+      right: 24px;
+      background: var(--frost-1);
+      color: var(--polar-0);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 10px 18px;
+      border-radius: var(--radius-pill);
+      box-shadow: var(--shadow-deep);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s var(--bezier-overshoot);
+      z-index: 2000;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 960px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+      .bar-lane.center {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =================================================================
+       SIMULATED FLOATING NOCTALIA v5 TOP BAR
+       ================================================================= -->
+  <header class="noctalia-bar">
+    <div class="bar-lane start">
+      <a href="#top" class="capsule" title="Launcher (SUPER + SPACE)">
+        <span style="color: var(--frost-1); font-weight: bold;">󰣇 CachyOS</span>
+      </a>
+      <nav class="ws-pills">
+        <a href="#top" class="ws-pill active">1</a>
+        <a href="#keybinds" class="ws-pill">2</a>
+        <a href="#plugins" class="ws-pill">3</a>
+        <a href="#files" class="ws-pill">4</a>
+        <a href="#customize" class="ws-pill">5</a>
+        <a href="#palette" class="ws-pill">6</a>
+      </nav>
+      <div class="capsule">
+        <span>docs.html</span>
+        <span title="Bongo Cat Active">🐱</span>
+      </div>
+    </div>
+
+    <!-- Simulated Center Resource Monitor (CPU, GPU, RAM, HDD) -->
+    <div class="bar-lane center">
+      <div class="sysmon-pill" title="Top Bar Resource Monitor ([widget.cpu], [widget.gpu], [widget.ram], [widget.disk])">
+        <div class="stat-chip">CPU <span>14%</span></div>
+        <div class="stat-chip">GPU <span>8%</span></div>
+        <div class="stat-chip">RAM <span>25%</span></div>
+        <div class="stat-chip">HDD <span>66%</span></div>
+      </div>
+    </div>
+
+    <div class="bar-lane end">
+      <div class="capsule" onclick="document.getElementById('kbSearch').focus()" style="cursor:pointer;">
+        <span>🔍 Press <strong style="color:var(--frost-1)">/</strong> to search</span>
+      </div>
+      <div class="capsule">
+        <span id="live-clock">12:00 PM</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- =================================================================
+       SIMULATED FLOATING BOTTOM DOCK
+       ================================================================= -->
+  <nav class="noctalia-dock" title="Simulated Noctalia v5 Bottom Dock">
+    <a href="#top" class="dock-item">󰀻 Overview</a>
+    <a href="#keybinds" class="dock-item">󰌌 Keybinds</a>
+    <a href="#plugins" class="dock-item">󰐱 14 Plugins</a>
+    <a href="#files" class="dock-item">󰉋 Dotfiles</a>
+    <a href="#customize" class="dock-item">󰒓 Customize</a>
+    <a href="#palette" class="dock-item">󰏘 Nord Palette</a>
+  </nav>
+
+  <main class="workspace-container" id="top">
+
+    <!-- =================================================================
+         WORKSPACE 1: HERO & SYSTEM OVERVIEW
+         ================================================================= -->
+    <section class="hypr-window">
+      <div class="hero-grid">
+        <div>
+          <div class="badge-row">
+            <span class="badge">Hyprland v0.56.2 Lua API</span>
+            <span class="badge">Noctalia Shell v5 + Greeter</span>
+            <span class="badge purple">14 Active Plugins</span>
+            <span class="badge green">0 Config Errors</span>
+          </div>
+          <h1>Nordic <span>minimaLinux × Caelestia</span></h1>
+          <p class="hero-desc">
+            Complete reference manual for your custom CachyOS desktop. Powered by Hyprland 0.56.2's native Lua engine (<code>hl.*</code>) and Noctalia v5's floating island bar, macOS-style bottom dock, live CPU/GPU/RAM/HDD resource gauges, and themed <code>noctalia-greeter</code>—tuned for 1920×1080 @ 60Hz on AMD Radeon R3 graphics.
+          </p>
+          <div class="badge-row" style="margin-bottom:0;">
+            <span class="badge" style="color:var(--snow-1)">SUPER + F1: HTML Manual</span>
+            <span class="badge" style="color:var(--snow-1)">SUPER + F2: Live Cheatsheet</span>
+            <span class="badge" style="color:var(--snow-1)">Apps: Kitty · Brave · Thunar</span>
+            <span class="badge" style="color:var(--snow-1)">GTK3/Qt: Nordzy-dark</span>
+          </div>
+        </div>
+
+        <div class="quick-cmd-box mono">
+          <div style="color:var(--snow-2); font-weight:700; margin-bottom:8px;">⚡ Essential Reload & Sync Commands</div>
+          <div class="cmd-line">
+            <code>hyprctl reload && hyprctl configerrors</code>
+            <button class="copy-btn" onclick="copyText('hyprctl reload && hyprctl configerrors')">Copy</button>
+          </div>
+          <div class="cmd-line">
+            <code>noctalia config validate ~/.config/noctalia</code>
+            <button class="copy-btn" onclick="copyText('noctalia config validate ~/.config/noctalia')">Copy</button>
+          </div>
+          <div class="cmd-line">
+            <code>rm -f ~/.local/state/noctalia/settings.toml && killall noctalia; noctalia & disown</code>
+            <button class="copy-btn" onclick="copyText('rm -f ~/.local/state/noctalia/settings.toml && killall noctalia; noctalia & disown')">Copy</button>
+          </div>
+          <div class="cmd-line">
+            <code>~/.config/hypr/Scripts/gamemode.sh</code>
+            <button class="copy-btn" onclick="copyText('~/.config/hypr/Scripts/gamemode.sh')">Copy</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         WORKSPACE 2: INTERACTIVE KEYBINDS EXPLORER
+         ================================================================= -->
+    <section class="hypr-window inactive" id="keybinds">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-pill">WS 2</span>
+          <span>Complete Keybindings Reference (`~/.config/hypr/keybind.lua`)</span>
+        </div>
+        <span class="mono" style="font-size:0.78rem; color:var(--frost-1);">MOD = SUPER (Windows Key)</span>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-input-wrap">
+          <input type="text" id="kbSearch" class="search-input" placeholder="Search keybinds by key, plugin, action, or command (Press '/' to focus)..." oninput="filterKeybinds()" />
+        </div>
+        <div class="category-tabs">
+          <button class="cat-btn active" onclick="setCategory('all', this)">All</button>
+          <button class="cat-btn" onclick="setCategory('noctalia', this)">Noctalia IPC</button>
+          <button class="cat-btn" onclick="setCategory('plugins', this)">Plugins & Docs</button>
+          <button class="cat-btn" onclick="setCategory('apps', this)">Apps & Media</button>
+          <button class="cat-btn" onclick="setCategory('window', this)">Window States</button>
+          <button class="cat-btn" onclick="setCategory('focus', this)">Focus & Resize</button>
+          <button class="cat-btn" onclick="setCategory('workspace', this)">Workspaces</button>
+        </div>
+      </div>
+
+      <div class="keybind-table-wrap">
+        <table id="kbTable">
+          <thead>
+            <tr>
+              <th style="width: 25%;">Shortcut</th>
+              <th style="width: 28%;">Action</th>
+              <th style="width: 35%;">Lua Dispatcher / IPC Command</th>
+              <th style="width: 12%;">Category</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- PLUGINS & DOCS -->
+            <tr data-cat="plugins">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>F1</kbd></td>
+              <td>Open This Local HTML Manual in Brave</td>
+              <td><span class="dispatcher-code">brave ~/.config/hypr/docs.html</span></td>
+              <td class="mono">plugins</td>
+            </tr>
+            <tr data-cat="plugins">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>F2</kbd></td>
+              <td>Toggle Live Keybind Cheatsheet Overlay</td>
+              <td><span class="dispatcher-code">noctalia msg panel-toggle kenn/keybind-cheatsheet:cheatsheet</span></td>
+              <td class="mono">plugins</td>
+            </tr>
+            <tr data-cat="plugins">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>W</kbd></td>
+              <td>Open Wallhaven Online Wallpaper Browser</td>
+              <td><span class="dispatcher-code">noctalia msg panel-toggle noctalia/wallhaven:browser</span></td>
+              <td class="mono">plugins</td>
+            </tr>
+            <tr data-cat="plugins">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>W</kbd></td>
+              <td>Open MPV Video Wallpaper Picker</td>
+              <td><span class="dispatcher-code">noctalia msg panel-toggle noctalia/mpvpaper:picker</span></td>
+              <td class="mono">plugins</td>
+            </tr>
+            <tr data-cat="plugins">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>,</kbd></td>
+              <td>Open Hyprland 0.56 Lua Settings GUI</td>
+              <td><span class="dispatcher-code">noctalia msg panel-toggle michael-retunzew/hyprland-settings:panel</span></td>
+              <td class="mono">plugins</td>
+            </tr>
+            <tr data-cat="plugins">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>B</kbd></td>
+              <td>Open Brave WebApp Maker Panel</td>
+              <td><span class="dispatcher-code">noctalia msg panel-toggle umedbazarov/webapp-maker:panel</span></td>
+              <td class="mono">plugins</td>
+            </tr>
+            <tr data-cat="plugins">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>L</kbd></td>
+              <td>Open LocalSend LAN File Transfer</td>
+              <td><span class="dispatcher-code">noctalia msg panel-toggle mera/localsend:panel</span></td>
+              <td class="mono">plugins</td>
+            </tr>
+            <tr data-cat="plugins">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>U</kbd></td>
+              <td>Open CachyOS / Arch & AUR Updater</td>
+              <td><span class="dispatcher-code">noctalia msg panel-toggle yuuto/arch-updater:panel</span></td>
+              <td class="mono">plugins</td>
+            </tr>
+
+            <!-- NOCTALIA SHELL v5 IPC -->
+            <tr data-cat="noctalia">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>SPACE</kbd></td>
+              <td>Toggle Noctalia App & Plugin Launcher</td>
+              <td><span class="dispatcher-code">noctalia msg panel-toggle launcher</span></td>
+              <td class="mono">noctalia</td>
+            </tr>
+            <tr data-cat="noctalia">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>N</kbd></td>
+              <td>Toggle Control Center / Dashboard</td>
+              <td><span class="dispatcher-code">noctalia msg panel-toggle control-center</span></td>
+              <td class="mono">noctalia</td>
+            </tr>
+            <tr data-cat="noctalia">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>V</kbd></td>
+              <td>Toggle Clipboard History Panel</td>
+              <td><span class="dispatcher-code">noctalia msg panel-toggle clipboard</span></td>
+              <td class="mono">noctalia</td>
+            </tr>
+            <tr data-cat="noctalia">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>W</kbd></td>
+              <td>Open Local Wallpaper & Slideshow Selector</td>
+              <td><span class="dispatcher-code">noctalia msg panel-toggle wallpaper</span></td>
+              <td class="mono">noctalia</td>
+            </tr>
+            <tr data-cat="noctalia">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>ESC</kbd></td>
+              <td>Session Power Menu (Lock/Logout/Reboot)</td>
+              <td><span class="dispatcher-code">noctalia msg panel-toggle session</span></td>
+              <td class="mono">noctalia</td>
+            </tr>
+            <tr data-cat="noctalia">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>,</kbd></td>
+              <td>Toggle Noctalia v5 GUI Settings Window</td>
+              <td><span class="dispatcher-code">noctalia msg settings-toggle</span></td>
+              <td class="mono">noctalia</td>
+            </tr>
+            <tr data-cat="noctalia">
+              <td><kbd>ALT</kbd> + <kbd>Tab</kbd></td>
+              <td>Carousel Window Switcher Overlay</td>
+              <td><span class="dispatcher-code">noctalia msg window-switcher hold</span></td>
+              <td class="mono">noctalia</td>
+            </tr>
+            <tr data-cat="noctalia">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>L</kbd></td>
+              <td>Lock Screen (Blurred Desktop + Widgets)</td>
+              <td><span class="dispatcher-code">noctalia msg session lock</span></td>
+              <td class="mono">noctalia</td>
+            </tr>
+            <tr data-cat="noctalia">
+              <td><kbd>Print</kbd></td>
+              <td>Capture Fullscreen Screenshot</td>
+              <td><span class="dispatcher-code">noctalia msg screenshot-fullscreen</span></td>
+              <td class="mono">noctalia</td>
+            </tr>
+            <tr data-cat="noctalia">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>S</kbd></td>
+              <td>Capture Region Screenshot & Annotate</td>
+              <td><span class="dispatcher-code">noctalia msg screenshot-region</span></td>
+              <td class="mono">noctalia</td>
+            </tr>
+
+            <!-- APPS & HARDWARE MEDIA -->
+            <tr data-cat="apps">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>Return</kbd></td>
+              <td>Launch Frosted Kitty Terminal</td>
+              <td><span class="dispatcher-code">hl.dsp.exec_cmd("kitty")</span></td>
+              <td class="mono">apps</td>
+            </tr>
+            <tr data-cat="apps">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>E</kbd></td>
+              <td>Launch Thunar File Manager (Nordic GTK3)</td>
+              <td><span class="dispatcher-code">hl.dsp.exec_cmd("thunar")</span></td>
+              <td class="mono">apps</td>
+            </tr>
+            <tr data-cat="apps">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>B</kbd></td>
+              <td>Launch Web Browser</td>
+              <td><span class="dispatcher-code">hl.dsp.exec_cmd("firefox")</span></td>
+              <td class="mono">apps</td>
+            </tr>
+            <tr data-cat="apps">
+              <td><kbd>XF86AudioRaiseVolume</kbd></td>
+              <td>Volume Up (with Overdrive & Top OSD)</td>
+              <td><span class="dispatcher-code">noctalia msg volume-up</span></td>
+              <td class="mono">apps</td>
+            </tr>
+            <tr data-cat="apps">
+              <td><kbd>XF86AudioLowerVolume</kbd></td>
+              <td>Volume Down (with Top OSD)</td>
+              <td><span class="dispatcher-code">noctalia msg volume-down</span></td>
+              <td class="mono">apps</td>
+            </tr>
+            <tr data-cat="apps">
+              <td><kbd>XF86AudioMute</kbd></td>
+              <td>Toggle Audio Mute</td>
+              <td><span class="dispatcher-code">noctalia msg volume-mute</span></td>
+              <td class="mono">apps</td>
+            </tr>
+            <tr data-cat="apps">
+              <td><kbd>XF86MonBrightnessUp/Down</kbd></td>
+              <td>Adjust Monitor Brightness (with DDC/CI)</td>
+              <td><span class="dispatcher-code">noctalia msg brightness-up / down</span></td>
+              <td class="mono">apps</td>
+            </tr>
+
+            <!-- WINDOW STATES -->
+            <tr data-cat="window">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>Q</kbd></td>
+              <td>Close Active Window</td>
+              <td><span class="dispatcher-code">hl.dsp.window.close()</span></td>
+              <td class="mono">window</td>
+            </tr>
+            <tr data-cat="window">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>Q</kbd></td>
+              <td>Exit Hyprland Session</td>
+              <td><span class="dispatcher-code">hl.dsp.exit()</span></td>
+              <td class="mono">window</td>
+            </tr>
+            <tr data-cat="window">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>F</kbd></td>
+              <td>Toggle Fullscreen Mode</td>
+              <td><span class="dispatcher-code">hl.dsp.window.fullscreen()</span></td>
+              <td class="mono">window</td>
+            </tr>
+            <tr data-cat="window">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>T</kbd></td>
+              <td>Toggle Floating Window Mode</td>
+              <td><span class="dispatcher-code">hl.dsp.window.float({ action = "toggle" })</span></td>
+              <td class="mono">window</td>
+            </tr>
+            <tr data-cat="window">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>P</kbd></td>
+              <td>Toggle Pseudotile on Active Window</td>
+              <td><span class="dispatcher-code">hl.dsp.window.pseudo()</span></td>
+              <td class="mono">window</td>
+            </tr>
+            <tr data-cat="window">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>J</kbd></td>
+              <td>Toggle Dwindle Split Orientation</td>
+              <td><span class="dispatcher-code">hl.dsp.layout("togglesplit")</span></td>
+              <td class="mono">window</td>
+            </tr>
+            <tr data-cat="window">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>G</kbd></td>
+              <td>Toggle Window Tabbed Group</td>
+              <td><span class="dispatcher-code">hl.dsp.group.toggle()</span></td>
+              <td class="mono">window</td>
+            </tr>
+
+            <!-- FOCUS, MOVE & RESIZE -->
+            <tr data-cat="focus">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd></td>
+              <td>Move Focus in Direction</td>
+              <td><span class="dispatcher-code">hl.dsp.focus({ direction = "left" })</span></td>
+              <td class="mono">focus</td>
+            </tr>
+            <tr data-cat="focus">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>Arrows</kbd></td>
+              <td>Move Active Window in Direction</td>
+              <td><span class="dispatcher-code">hl.dsp.window.move({ direction = "left" })</span></td>
+              <td class="mono">focus</td>
+            </tr>
+            <tr data-cat="focus">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>Arrows</kbd></td>
+              <td>Resize Active Window (±40px)</td>
+              <td><span class="dispatcher-code">hl.dsp.window.resize({ x=40, y=0, relative=true })</span></td>
+              <td class="mono">focus</td>
+            </tr>
+            <tr data-cat="focus">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>Left Click Drag</kbd></td>
+              <td>Drag Window with Mouse</td>
+              <td><span class="dispatcher-code">hl.dsp.window.drag()</span></td>
+              <td class="mono">focus</td>
+            </tr>
+            <tr data-cat="focus">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>Right Click Drag</kbd></td>
+              <td>Resize Window with Mouse</td>
+              <td><span class="dispatcher-code">hl.dsp.window.resize()</span></td>
+              <td class="mono">focus</td>
+            </tr>
+
+            <!-- WORKSPACES & SCRATCHPAD -->
+            <tr data-cat="workspace">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>1..9</kbd></td>
+              <td>Switch to Workspace 1–9 (or Click Top Bar)</td>
+              <td><span class="dispatcher-code">hl.dsp.focus({ workspace = i })</span></td>
+              <td class="mono">workspace</td>
+            </tr>
+            <tr data-cat="workspace">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>1..9</kbd></td>
+              <td>Move Window to Workspace 1–9 & Follow</td>
+              <td><span class="dispatcher-code">hl.dsp.window.move({ workspace = i })</span></td>
+              <td class="mono">workspace</td>
+            </tr>
+            <tr data-cat="workspace">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>1..9</kbd></td>
+              <td>Send Window Silently to Workspace 1–9</td>
+              <td><span class="dispatcher-code">hl.dsp.window.move({ workspace = i, follow = false })</span></td>
+              <td class="mono">workspace</td>
+            </tr>
+            <tr data-cat="workspace">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>S</kbd></td>
+              <td>Toggle Special Scratchpad ("magic")</td>
+              <td><span class="dispatcher-code">hl.dsp.workspace.toggle_special("magic")</span></td>
+              <td class="mono">workspace</td>
+            </tr>
+            <tr data-cat="workspace">
+              <td><kbd class="mod">SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>A</kbd></td>
+              <td>Send Active Window to Scratchpad</td>
+              <td><span class="dispatcher-code">hl.dsp.window.move({ workspace = "special:magic" })</span></td>
+              <td class="mono">workspace</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         WORKSPACE 3: INSTALLED NOCTALIA v5 PLUGINS GUIDE
+         ================================================================= -->
+    <section class="hypr-window inactive" id="plugins">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-pill">WS 3</span>
+          <span>Installed Noctalia v5 Plugins & Where They Live</span>
+        </div>
+        <span class="mono" style="font-size:0.78rem; color:var(--aurora-purple);">Configured in `[plugins]` & `[plugin_settings]`</span>
+      </div>
+
+      <div class="grid-3">
+        <div class="sub-card">
+          <h3>🐱 Bongo Cat <span class="plugin-tag">noctalia/bongocat</span></h3>
+          <p>
+            Lives in the <strong>Top Bar (Start Lane)</strong> right beside your active window title. Uses <code>evtest</code> on <code>/dev/input/by-id/*-event-kbd</code> with <code>tappy_mode = true</code> and <code>audio_spectrum = true</code> so its paws slap on every keystroke and beat.
+          </p>
+        </div>
+
+        <div class="sub-card">
+          <h3>🖼️ Wallhaven Browser <span class="plugin-tag">noctalia/wallhaven</span></h3>
+          <p>
+            Accessible via <kbd class="mod">SUPER</kbd>+<kbd>SHIFT</kbd>+<kbd>W</kbd>, the <strong>Top Bar</strong>, or <strong>Control Center</strong> (<kbd class="mod">SUPER</kbd>+<kbd>N</kbd>). Downloads wallpapers directly into <code>/home/tejasvishwasgosavi/wallpaper</code>.
+          </p>
+        </div>
+
+        <div class="sub-card">
+          <h3>🎬 MPV Video Wallpapers <span class="plugin-tag">noctalia/mpvpaper</span></h3>
+          <p>
+            Accessible via <kbd class="mod">SUPER</kbd>+<kbd>CTRL</kbd>+<kbd>W</kbd>, the <strong>Top Bar</strong>, or <strong>Control Center</strong>. Plays hardware-accelerated <code>.mp4</code>/<code>.webm</code> wallpapers from <code>~/Videos</code>.
+          </p>
+        </div>
+
+        <div class="sub-card">
+          <h3>⚙️ Hyprland Lua GUI <span class="plugin-tag">hyprland-settings</span></h3>
+          <p>
+            Open with <kbd class="mod">SUPER</kbd>+<kbd>SHIFT</kbd>+<kbd>,</kbd> or type <code>/hyprland</code> in the launcher. Edits Hyprland 0.56 Lua settings visually with a 15-second safe auto-revert timer.
+          </p>
+        </div>
+
+        <div class="sub-card">
+          <h3>⌨️ Keybind Cheatsheet <span class="plugin-tag">keybind-cheatsheet</span></h3>
+          <p>
+            Open with <kbd class="mod">SUPER</kbd>+<kbd>F2</kbd> or click the keyboard icon in the <strong>Top Bar</strong>. Parses your live <code>hyprctl binds</code> list into an interactive overlay.
+          </p>
+        </div>
+
+        <div class="sub-card">
+          <h3>📦 Arch & AUR Updater <span class="plugin-tag">yuuto/arch-updater</span></h3>
+          <p>
+            Open with <kbd class="mod">SUPER</kbd>+<kbd>U</kbd>, click the <strong>Top Bar</strong> badge, or type <code>/arch</code> in the launcher. Tracks CachyOS & AUR updates with an activity graph.
+          </p>
+        </div>
+
+        <div class="sub-card">
+          <h3>📡 LocalSend LAN Share <span class="plugin-tag">mera/localsend</span></h3>
+          <p>
+            Open with <kbd class="mod">SUPER</kbd>+<kbd>SHIFT</kbd>+<kbd>L</kbd> or the <strong>Top Bar</strong> icon. Transfers files and clipboard text over local Wi-Fi/LAN with phones and PCs.
+          </p>
+        </div>
+
+        <div class="sub-card">
+          <h3>🌐 Brave WebApp Maker <span class="plugin-tag">webapp-maker</span></h3>
+          <p>
+            Open with <kbd class="mod">SUPER</kbd>+<kbd>SHIFT</kbd>+<kbd>B</kbd>. Wraps any website URL into a standalone, frameless Brave desktop application with its own icon in your launcher.
+          </p>
+        </div>
+
+        <div class="sub-card">
+          <h3>🚀 Launcher Providers <span class="plugin-tag">SUPER + SPACE</span></h3>
+          <p>
+            Press <kbd class="mod">SUPER</kbd>+<kbd>SPACE</kbd> and type <code>/</code> to search YouTube (<code>youtube-search</code>), the web (<code>web-search</code>), recent Zed projects (<code>/zed</code>), or stream stations (<code>world-radio</code>).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         WORKSPACE 4: DOTFILES ARCHITECTURE & CUSTOM SCRIPTS
+         ================================================================= -->
+    <section class="hypr-window inactive" id="files">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-pill">WS 4</span>
+          <span>Complete Dotfiles Tree, Scripts & System Configs</span>
+        </div>
+        <span class="mono" style="font-size:0.78rem; color:var(--aurora-green);">Hyprland 0.56.2 Lua + Noctalia v5 TOML + GTK3/Greeter</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="sub-card">
+          <h3>1. Core Hyprland Lua Files <span class="file-path">~/.config/hypr/*.lua</span></h3>
+          <p>
+            <strong><code>hyprland.lua</code></strong> sets up your 1080p@60Hz monitor, input, touchpad (`tap_to_click`), and 3-finger swipe, then loads:<br>
+            • <strong><code>theme.lua</code></strong>: 2px 45° Frost borders (`general.col`), 2-pass blur, and the `global` animation tree (`popin 80%`).<br>
+            • <strong><code>exec.lua</code></strong>: Wayland env vars, DBus sync, `noctalia`, and `cliphist`.<br>
+            • <strong><code>rules.lua</code></strong>: `no_anim = true` blur mask on Noctalia layers, persistent workspaces bound to `HDMI-A-1`, and floating dialogs.<br>
+            • <strong><code>keybind.lua</code></strong>: All compositor, media, and plugin shortcuts.
+          </p>
+        </div>
+
+        <div class="sub-card">
+          <h3>2. Modular Lua Extensions & Idle <span class="file-path">~/.config/hypr/</span></h3>
+          <p>
+            • <strong><code>monitors.lua</code> / <code>inputs.lua</code> / <code>startup.lua</code> / <code>windowrules.lua</code></strong>: Modular extensions matching your classic layout without duplicate gesture warnings.<br>
+            • <strong><code>animations/default.lua</code> & <code>minimal.lua</code></strong>: Switchable Caelestia fluid and low-latency Radeon R3 presets.<br>
+            • <strong><code>hypridle.conf</code></strong>: Dims at 5 min, locks via `noctalia msg lock` at 10 min, and powers off display (DPMS) at 15 min.
+          </p>
+        </div>
+
+        <div class="sub-card">
+          <h3>3. Custom Helper Scripts <span class="file-path">~/.config/hypr/Scripts/</span></h3>
+          <p>
+            • <strong><code>gamemode.sh</code></strong>: Instant Radeon R3 performance booster—toggles off blur, shadows, gaps, and animations for gaming, and restores Nordic glass on second run.<br>
+            • <strong><code>browser-launcher.sh</code></strong>: Automatically detects and launches your preferred Wayland browser (`firefox`, `brave`, `zen-browser`).
+          </p>
+        </div>
+
+        <div class="sub-card">
+          <h3>4. Noctalia Config & Login Greeter <span class="file-path">config.toml & greeter.toml</span></h3>
+          <p>
+            • <strong><code>~/.config/noctalia/config.toml</code></strong>: Unified TOML config defining the floating top bar, `cpu`/`gpu`/`ram`/`disk` gauges, bottom dock, 5 balanced desktop widgets, and plugin settings.<br>
+            • <strong><code>/var/lib/noctalia-greeter/greeter.toml</code></strong>: Themes the pre-session `greetd` login screen with your `#88C0D0` / `#2E3440` Nord palette and `Nordzy-dark` cursor.
+          </p>
+        </div>
+
+        <div class="sub-card">
+          <h3>5. Thunar GTK3 & Terminal Rice <span class="file-path">gtk-3.0, kitty & nvim</span></h3>
+          <p>
+            • <strong><code>~/.config/gtk-3.0/gtk.css</code> & <code>settings.ini</code></strong>: Fixes Thunar's dark-mode contrast with `#D8DEE9` Snow Storm text and a `#3B4252` path bar.<br>
+            • <strong><code>~/.config/kitty/kitty.conf</code></strong>: `14px` padding + `0.86` opacity.<br>
+            • <strong><code>~/.config/nvim/init.lua</code></strong>: Transparent Nordic highlight engine.<br>
+            • <strong><code>~/.config/starship.toml</code></strong>: Nordic pill prompt with `scan_timeout = 100`.
+          </p>
+        </div>
+
+        <div class="sub-card">
+          <h3>6. Desktop & Lockscreen Widgets <span class="file-path">[desktop_widgets]</span></h3>
+          <p>
+            Calibrated for `1920x1080` (`HDMI-A-1`) with the alignment grid hidden (`visible = false`):<br>
+            • <strong>Centre</strong>: Hero Clock (`960, 220`) + Fancy Visualizer (`960, 390`)<br>
+            • <strong>Left</strong>: Monthly Calendar Card (`220, 230`)<br>
+            • <strong>Right</strong>: Weather Card (`1700, 190`) + Media Player (`1700, 390`)
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         WORKSPACE 5: HOW TO MODIFY & TROUBLESHOOT RECIPES
+         ================================================================= -->
+    <section class="hypr-window inactive" id="customize">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-pill">WS 5</span>
+          <span>How to Edit Configs & Troubleshoot Common Tasks</span>
+        </div>
+        <span class="mono" style="font-size:0.78rem; color:var(--frost-1);">Direct Config-File Workflows</span>
+      </div>
+
+      <div class="grid-2">
+        <!-- Recipe 1 -->
+        <div class="sub-card">
+          <h3>A. Editing Noctalia TOML Without GUI Overrides <span class="file-path">config.toml</span></h3>
+          <p>
+            Noctalia keeps `~/.local/state/noctalia/settings.toml` in memory while running and overrides `~/.config/noctalia/config.toml`. Whenever you edit `~/.config/noctalia/config.toml` directly, apply it cleanly with:
+          </p>
+          <pre class="code-block"><code>killall noctalia
+cp ~/.config/noctalia/config.toml ~/.local/state/noctalia/settings.toml
+noctalia config validate ~/.config/noctalia
+noctalia &amp; disown</code></pre>
+          <button class="copy-btn" style="align-self:flex-start;" onclick="copyText('killall noctalia && cp ~/.config/noctalia/config.toml ~/.local/state/noctalia/settings.toml && noctalia config validate ~/.config/noctalia && noctalia & disown')">Copy Command</button>
+        </div>
+
+        <!-- Recipe 2 -->
+        <div class="sub-card">
+          <h3>B. Re-enabling Bongo Cat Keyboard Detection <span class="file-path">/dev/input</span></h3>
+          <p>
+            If Bongo Cat stops slapping keys after a kernel update or unplugging your USB keyboard, refresh the ACL read permissions on `/dev/input/event*` without rebooting:
+          </p>
+          <pre class="code-block"><code><span class="cmt"># Grant immediate read access to evtest for Bongo Cat</span>
+sudo setfacl -m u:$USER:r /dev/input/event*</code></pre>
+          <button class="copy-btn" style="align-self:flex-start;" onclick="copyText('sudo setfacl -m u:$USER:r /dev/input/event*')">Copy Command</button>
+        </div>
+
+        <!-- Recipe 3 -->
+        <div class="sub-card">
+          <h3>C. Customizing Top Bar Resource Monitors <span class="file-path">config.toml</span></h3>
+          <p>
+            Your centre bar pill groups `["cpu", "gpu", "ram", "disk"]`. You can switch `visualization` between `"gauge"`, `"sparkline"`, or `"none"`, or change `"ram_pct"` to `"ram_used"` (GiB):
+          </p>
+          <pre class="code-block"><code>[widget.ram]
+stat = <span class="str">"ram_pct"</span>          <span class="cmt"># Or "ram_used" for GiB</span>
+visualization = <span class="str">"gauge"</span>   <span class="cmt"># "gauge" | "sparkline" | "none"</span>
+show_value = <span class="kw">true</span>
+type = <span class="str">"sysmon"</span></code></pre>
+        </div>
+
+        <!-- Recipe 4 -->
+        <div class="sub-card">
+          <h3>D. Installing the Noctalia Login Greeter Theme <span class="file-path">greeter.toml</span></h3>
+          <p>
+            To copy your themed `greeter.toml` to the system `greetd` directory and set the required `greetd:greetd` ownership:
+          </p>
+          <pre class="code-block"><code>sudo install -Dm644 greeter.toml /var/lib/noctalia-greeter/greeter.toml
+sudo chown -R greetd:greetd /var/lib/noctalia-greeter</code></pre>
+          <button class="copy-btn" style="align-self:flex-start;" onclick="copyText('sudo install -Dm644 greeter.toml /var/lib/noctalia-greeter/greeter.toml && sudo chown -R greetd:greetd /var/lib/noctalia-greeter')">Copy Command</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         WORKSPACE 6: INTERACTIVE NORDIC PALETTE SWATCHES
+         ================================================================= -->
+    <section class="hypr-window inactive" id="palette">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-pill">WS 6</span>
+          <span>Interactive Nord Colour Swatches (Click to Copy)</span>
+        </div>
+        <span class="mono" style="font-size:0.78rem; color:var(--snow-0);">Click any card to copy its Hyprland <code>rgba(...)</code> value</span>
+      </div>
+
+      <div class="swatch-grid">
+        <div class="swatch" onclick="copyText('rgba(2e3440ff)')">
+          <div class="swatch-color" style="background:#2E3440;"></div>
+          <div class="swatch-info"><span class="swatch-name">Polar Night 0</span><span class="swatch-hex">#2E3440</span></div>
+        </div>
+        <div class="swatch" onclick="copyText('rgba(3b4252ff)')">
+          <div class="swatch-color" style="background:#3B4252;"></div>
+          <div class="swatch-info"><span class="swatch-name">Polar Night 1</span><span class="swatch-hex">#3B4252</span></div>
+        </div>
+        <div class="swatch" onclick="copyText('rgba(434c5eff)')">
+          <div class="swatch-color" style="background:#434C5E;"></div>
+          <div class="swatch-info"><span class="swatch-name">Polar Night 2</span><span class="swatch-hex">#434C5E</span></div>
+        </div>
+        <div class="swatch" onclick="copyText('rgba(4c566aff)')">
+          <div class="swatch-color" style="background:#4C566A;"></div>
+          <div class="swatch-info"><span class="swatch-name">Polar Night 3</span><span class="swatch-hex">#4C566A</span></div>
+        </div>
+        <div class="swatch" onclick="copyText('rgba(d8dee9ff)')">
+          <div class="swatch-color" style="background:#D8DEE9;"></div>
+          <div class="swatch-info"><span class="swatch-name">Snow Storm 0</span><span class="swatch-hex">#D8DEE9</span></div>
+        </div>
+        <div class="swatch" onclick="copyText('rgba(eceff4ff)')">
+          <div class="swatch-color" style="background:#ECEFF4;"></div>
+          <div class="swatch-info"><span class="swatch-name">Snow Storm 2</span><span class="swatch-hex">#ECEFF4</span></div>
+        </div>
+        <div class="swatch" onclick="copyText('rgba(8fbcbbff)')">
+          <div class="swatch-color" style="background:#8FBCBB;"></div>
+          <div class="swatch-info"><span class="swatch-name">Frost 0 (Teal)</span><span class="swatch-hex">#8FBCBB</span></div>
+        </div>
+        <div class="swatch" onclick="copyText('rgba(88c0d0ff)')">
+          <div class="swatch-color" style="background:#88C0D0;"></div>
+          <div class="swatch-info"><span class="swatch-name">Frost 1 (Ice)</span><span class="swatch-hex">#88C0D0</span></div>
+        </div>
+        <div class="swatch" onclick="copyText('rgba(81a1c1ff)')">
+          <div class="swatch-color" style="background:#81A1C1;"></div>
+          <div class="swatch-info"><span class="swatch-name">Frost 2 (Blue)</span><span class="swatch-hex">#81A1C1</span></div>
+        </div>
+        <div class="swatch" onclick="copyText('rgba(5e81acff)')">
+          <div class="swatch-color" style="background:#5E81AC;"></div>
+          <div class="swatch-info"><span class="swatch-name">Frost 3 (Deep)</span><span class="swatch-hex">#5E81AC</span></div>
+        </div>
+        <div class="swatch" onclick="copyText('rgba(bf616aff)')">
+          <div class="swatch-color" style="background:#BF616A;"></div>
+          <div class="swatch-info"><span class="swatch-name">Aurora Red</span><span class="swatch-hex">#BF616A</span></div>
+        </div>
+        <div class="swatch" onclick="copyText('rgba(a3be8cff)')">
+          <div class="swatch-color" style="background:#A3BE8C;"></div>
+          <div class="swatch-info"><span class="swatch-name">Aurora Green</span><span class="swatch-hex">#A3BE8C</span></div>
+        </div>
+        <div class="swatch" onclick="copyText('rgba(ebcb8bff)')">
+          <div class="swatch-color" style="background:#EBCB8B;"></div>
+          <div class="swatch-info"><span class="swatch-name">Aurora Yellow</span><span class="swatch-hex">#EBCB8B</span></div>
+        </div>
+        <div class="swatch" onclick="copyText('rgba(b48eadff)')">
+          <div class="swatch-color" style="background:#B48EAD;"></div>
+          <div class="swatch-info"><span class="swatch-name">Aurora Purple</span><span class="swatch-hex">#B48EAD</span></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast">Copied to clipboard!</div>
+
+  <script>
+    // 1. Live Clock in Simulated Noctalia Bar
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('live-clock').textContent = now.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 2. Filter Keybindings by Category & Search Query
+    let currentCat = 'all';
+
+    function setCategory(cat, btn) {
+      currentCat = cat;
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterKeybinds();
+    }
+
+    function filterKeybinds() {
+      const query = document.getElementById('kbSearch').value.toLowerCase();
+      const rows = document.querySelectorAll('#kbTable tbody tr');
+
+      rows.forEach(row => {
+        const cat = row.getAttribute('data-cat');
+        const text = row.innerText.toLowerCase();
+        const matchesCat = (currentCat === 'all' || cat === currentCat);
+        const matchesQuery = text.includes(query);
+        row.style.display = (matchesCat && matchesQuery) ? '' : 'none';
+      });
+    }
+
+    // 3. Press '/' anywhere to focus the Keybind Search Bar
+    document.addEventListener('keydown', (e) => {
+      const searchInput = document.getElementById('kbSearch');
+      if (e.key === '/' && document.activeElement !== searchInput) {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (e.key === 'Escape' && document.activeElement === searchInput) {
+        searchInput.blur();
+      }
+    });
+
+    // 4. Copy to Clipboard with Toast Notification
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        toast.textContent = `Copied: ${text}`;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2200);
+      });
+    }
+
+    // 5. Highlight Active Workspace Pill on Scroll
+    const pills = document.querySelectorAll('.ws-pill');
+    const sections = ['top', 'keybinds', 'plugins', 'files', 'customize', 'palette'];
+    window.addEventListener('scroll', () => {
+      const scrollPos = window.scrollY + 140;
+      sections.forEach((id, idx) => {
+        const el = document.getElementById(id);
+        if (el && scrollPos >= el.offsetTop && scrollPos < el.offsetTop + el.offsetHeight) {
+          pills.forEach(p => p.classList.remove('active'));
+          if (pills[idx]) pills[idx].classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

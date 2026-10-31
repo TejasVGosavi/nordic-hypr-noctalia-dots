@@ -1,0 +1,70 @@
+# =====================================================================
+# ~ NOCTALIA v5: Top Bar & Capsule Widget Definitions ~
+# =====================================================================
+
+[bar.default]
+enabled = true
+position = "top"                    # top | bottom | left | right
+thickness = 36                      # Bar height in pixels
+background = "surface"
+background_opacity = 0.72           # Translucent base for Hyprland layer blur
+compositor_blur = true              # Publishes blur region to Hyprland
+border = "outline"
+font_scale = 1.0
+auto_hide = false
+show_on_workspace_switch = true
+
+# Bar Lane Layout (Left, Center, Right)
+start  = ["launcher", "workspaces", "active_window"]
+center = ["system_monitor", "taskbar"]
+end    = ["audio_visualizer", "media", "volume", "brightness", "battery", "clock", "tray", "control-center"]
+
+# ---------------------------------------------------------------------
+# WIDGET DEFINITIONS
+# ---------------------------------------------------------------------
+
+[widget.launcher]
+type = "launcher"
+
+[widget.workspaces]
+type = "workspaces"
+
+[widget.active_window]
+type = "active_window"
+
+[widget.system_monitor]
+type = "system_monitor"
+
+[widget.taskbar]
+type = "taskbar"
+show_running = true
+group_by_workspace = false
+icon_scale = 1.0
+item_spacing = 6
+show_window_title = false
+show_active_indicator = true
+
+[widget.audio_visualizer]
+type = "audio_visualizer"
+
+[widget.media]
+type = "media"
+
+[widget.volume]
+type = "volume"
+
+[widget.brightness]
+type = "brightness"
+
+[widget.battery]
+type = "battery"
+
+[widget.clock]
+type = "clock"
+format = "%I:%M %p"
+
+[widget.tray]
+type = "tray"
+
+[widget.control-center]
+type = "control-center"

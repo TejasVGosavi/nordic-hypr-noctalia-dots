@@ -1,0 +1,94 @@
+/* =====================================================================
+   ~ NORDIC GTK3 OVERRIDE FOR THUNAR (~/.config/gtk-3.0/gtk.css) ~
+   Fixes black-on-dark unreadable text and white location bar in Thunar
+   ===================================================================== */
+
+@define-color theme_bg_color #2E3440;
+@define-color theme_fg_color #D8DEE9;
+@define-color theme_base_color #2E3440;
+@define-color theme_text_color #ECEFF4;
+@define-color theme_selected_bg_color #88C0D0;
+@define-color theme_selected_fg_color #2E3440;
+
+/* Main Thunar Window, Menu Bar & Status Bar */
+window,
+.thunar,
+menubar,
+.menubar,
+statusbar,
+toolbar {
+  background-color: #2E3440;
+  color: #D8DEE9;
+}
+
+menubar > menuitem,
+.menubar > menuitem,
+menu,
+menuitem {
+  background-color: #2E3440;
+  color: #D8DEE9;
+}
+
+menuitem:hover {
+  background-color: #434C5E;
+  color: #ECEFF4;
+}
+
+/* Fix the bright white URL / Location Entry Bar at the top of Thunar */
+entry,
+.thunar toolbar entry,
+headerbar entry {
+  background-color: #3B4252;
+  color: #ECEFF4;
+  border: 1px solid #4C566A;
+  border-radius: 8px;
+  padding: 4px 8px;
+  caret-color: #88C0D0;
+}
+
+entry:focus {
+  border-color: #88C0D0;
+}
+
+/* Fix Main File List / Treeview & Column Headers */
+treeview.view,
+.view,
+iconview {
+  background-color: #2E3440;
+  color: #D8DEE9;
+}
+
+treeview.view:selected,
+.view:selected,
+iconview:selected,
+row:selected {
+  background-color: #88C0D0;
+  color: #2E3440;
+  font-weight: bold;
+}
+
+treeview.view header button {
+  background-color: #3B4252;
+  color: #88C0D0;
+  border-bottom: 1px solid #4C566A;
+  font-weight: bold;
+}
+
+/* Fix Left Places Sidebar */
+scrolledwindow.sidebar,
+.sidebar,
+.sidebar list,
+.sidebar row,
+placessidebar,
+placessidebar list {
+  background-color: #262b36;
+  color: #D8DEE9;
+}
+
+.sidebar row:selected,
+placessidebar row:selected {
+  background-color: #3B4252;
+  color: #88C0D0;
+}
+
+@import url("noctalia.css");

@@ -1,0 +1,17 @@
+# =====================================================================
+# ~ NOCTALIA v5: Nordic Theme & Template Engine ~
+# =====================================================================
+
+[theme]
+mode = "dark"                       # dark | light | auto
+shell_mode = "follow"               # Syncs bars, panels & launcher with mode
+source = "builtin"                  # builtin | wallpaper | community | custom
+builtin = "Nord"                    # Built-in Nord palette
+pure_black_dark = false             # Keep authentic Nord Polar Night (#2E3440) slates
+sync_color_scheme = true            # Pushes prefer-dark to GTK/Qt/Electron via desktop portal
+
+[theme.templates]
+enable_builtin_templates = false    # Set to true if you want Noctalia to overwrite app configs dynamically
+builtin_ids = []
+enable_community_templates = false
+community_ids = []

@@ -1,0 +1,31 @@
+# =====================================================================
+# ~ DOTFILES .gitignore (Hyprland v0.56.2 + Noctalia v5) ~
+# =====================================================================
+
+# 1. Legacy Noctalia v4 Quickshell / QML files
+config/noctalia/plugins/
+config/noctalia/plugins.json
+config/noctalia/*.bak
+
+# 2. Legacy Hyprland .conf backups (Keep hypridle.conf tracked!)
+config/hypr/backup-conf/
+config/hypr/*.conf
+!config/hypr/hypridle.conf
+
+# 3. GTK-3.0 private local filesystem bookmarks
+config/gtk-3.0/bookmarks
+
+# 4. Neovim runtime state, swap & undo history
+config/nvim/.netrwhist
+config/nvim/undodir/
+config/nvim/spell/
+*.swp
+*.swo
+*~
+
+# 5. General OS & temporary backup files
+*.bak
+*.tmp
+*.log
+.DS_Store
+.env
