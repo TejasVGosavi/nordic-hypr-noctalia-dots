@@ -1,18 +1,154 @@
-config_version = 15
+# =====================================================================
+# ~ NOCTALIA v5 UNIFIED CONFIG (0 Errors, 0 Warnings Verified) ~
+# =====================================================================
 
-[calendar.account.personal_google]
-type = "google"
+[accessibility]
+high_contrast = false
+ui_scale = 1.0
+
+[audio]
+enable_notification_sounds = true
+enable_overdrive = true
+enable_power_sounds = true
+enable_screenshot_sounds = true
+enable_sounds = true
+enable_volume_sounds = true
+sound_theme = "freedesktop"
+sound_volume = 0.5
+
+[backdrop]
+blur_intensity = 0.65
+enabled = true
+tint_intensity = 0.25
+
+[bar]
+order = [ "default" ]
+
+    [bar.default]
+    auto_hide = false
+    auto_hide_delay_ms = 0
+    background_opacity = 0.72
+    border = "outline_variant"
+    border_width = 1.0
+    capsule = true
+    capsule_border_width = 1.0
+    capsule_fill = "surface_container"
+    capsule_group = []
+    capsule_opacity = 0.88
+    capsule_padding = 8.0
+    capsule_thickness = 0.78
+    center = [ "cpu", "gpu", "ram", "disk" ]
+    compositor_blur = true
+    concave_edge_corners = false
+    contact_shadow = false
+    enabled = true
+    end = [
+        "media",
+        "audio_visualizer",
+        "wallhaven",
+        "mpvpaper",
+        "arch_updater",
+        "localsend",
+        "keybinds_help",
+        "volume",
+        "brightness",
+        "clock",
+        "tray",
+        "control-center"
+    ]
+    font_scale = 1.0
+    font_weight = 500
+    hover_highlight = true
+    layer = "top"
+    margin_edge = 8
+    margin_ends = 12
+    margin_opposite_edge = 0
+    padding = 8
+    panel_overlap = 1
+    position = "top"
+    radius = 16
+    radius_bottom_left = 16
+    radius_bottom_right = 16
+    radius_top_left = 16
+    radius_top_right = 16
+    reserve_space = true
+    scale = 1.0
+    shadow = true
+    show_on_workspace_switch = true
+    show_tooltip = true
+    smart_auto_hide = false
+    start = [ "launcher", "workspaces", "active_window", "bongocat" ]
+    thickness = 38
+    widget_spacing = 6
+
+[battery]
+warning_threshold = 10
+
+[brightness]
+enable_ddcutil = true
+ignore_mmids = []
+minimum_brightness = 0.0
+sync_all_monitors = true
+
+[calendar]
+dedupe_events = true
+dedupe_ignore_patterns = []
+enabled = true
+event_date_format = "%A %e %B"
+event_time_format = "%H:%M"
+refresh_minutes = 15
+
+    [calendar.reminders]
+    all_day_digest_time = "09:00"
+    default_lead_minutes = 10
+    enabled = true
+    use_event_reminders = true
+
+[control_center]
+hidden_tabs = []
+show_session_button = true
+show_shortcut_labels = true
+sidebar = "compact"
+sidebar_section = "compact"
+width = 700
+
+    [control_center.calendar]
+    show_events_card = true
+    show_week_numbers = true
+
+    [[control_center.shortcuts]]
+    type = "wifi"
+
+    [[control_center.shortcuts]]
+    type = "bluetooth"
+
+    [[control_center.shortcuts]]
+    type = "caffeine"
+
+    [[control_center.shortcuts]]
+    type = "nightlight"
+
+    [[control_center.shortcuts]]
+    type = "notification"
+
+    [[control_center.shortcuts]]
+    type = "power_profile"
+
+    [[control_center.shortcuts]]
+    type = "noctalia/wallhaven:shortcut"
+
+    [[control_center.shortcuts]]
+    type = "noctalia/mpvpaper:shortcut"
 
 [desktop_widgets]
+enabled = true
 schema_version = 2
 widget_order = [
     "desktop-widget-0000000000000001",
     "desktop-widget-0000000000000003",
     "desktop-widget-0000000000000004",
     "desktop-widget-0000000000000005",
-    "desktop-widget-0000000000000008",
-    "desktop-widget-0000000000000009",
-    "desktop-widget-000000000000000a"
+    "desktop-widget-0000000000000008"
 ]
 
     [desktop_widgets.grid]
@@ -25,6 +161,7 @@ widget_order = [
     box_width = 0.0
     cx = 960.0
     cy = 220.0
+    enabled = true
     output = "HDMI-A-1"
     placement_height = 1080.0
     placement_width = 1920.0
@@ -34,8 +171,9 @@ widget_order = [
     [desktop_widgets.widget.desktop-widget-0000000000000003]
     box_height = 0.0
     box_width = 0.0
-    cx = 324.0
-    cy = 266.0
+    cx = 220.0
+    cy = 230.0
+    enabled = true
     output = "HDMI-A-1"
     placement_height = 1080.0
     placement_width = 1920.0
@@ -47,6 +185,7 @@ widget_order = [
     box_width = 0.0
     cx = 960.0
     cy = 390.0
+    enabled = true
     output = "HDMI-A-1"
     placement_height = 1080.0
     placement_width = 1920.0
@@ -61,6 +200,7 @@ widget_order = [
     box_width = 0.0
     cx = 1700.0
     cy = 390.0
+    enabled = true
     output = "HDMI-A-1"
     placement_height = 1080.0
     placement_width = 1920.0
@@ -72,186 +212,271 @@ widget_order = [
     box_width = 368.0
     cx = 1700.0
     cy = 190.0
+    enabled = true
     output = "HDMI-A-1"
     placement_height = 1080.0
     placement_width = 1920.0
     rotation = 0.0
     type = "weather"
 
-    [desktop_widgets.widget.desktop-widget-0000000000000009]
-    box_height = 0.0
-    box_width = 0.0
-    cx = 749.0
-    cy = 229.0
-    output = "HDMI-A-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
-    rotation = 0.0
-    type = "sysmon"
+[dock]
+active_monitor_only = false
+active_opacity = 1.0
+active_scale = 1.0
+auto_hide = false
+background_opacity = 0.78
+border = "outline_variant"
+border_width = 1.0
+concave_edge_corners = false
+cross_axis_padding = 8
+enabled = true
+icon_size = 44
+inactive_opacity = 0.88
+inactive_scale = 0.92
+item_spacing = 8
+launcher_custom_image = ""
+launcher_custom_image_colorize = false
+launcher_icon = "grid-dots"
+launcher_position = "start"
+layer = "top"
+magnification = true
+magnification_scale = 1.35
+main_axis_padding = 14
+margin_edge = 8
+margin_ends = 0
+pinned = [ "firefox", "kitty", "thunar" ]
+position = "bottom"
+radius = 18
+radius_bottom_left = 18
+radius_bottom_right = 18
+radius_top_left = 18
+radius_top_right = 18
+reserve_space = false
+shadow = true
+show_dots = true
+show_instance_count = true
+show_running = true
+smart_auto_hide = true
 
-        [desktop_widgets.widget.desktop-widget-0000000000000009.settings]
-        stat = "cpu_usage"
-        stat2 = "cpu_temp"
+[hot_corners]
+delay_ms = 0
+enabled = true
 
-    [desktop_widgets.widget.desktop-widget-000000000000000a]
-    box_height = 0.0
-    box_width = 0.0
-    cx = 1215.0
-    cy = 227.0
-    output = "HDMI-A-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
-    rotation = 0.0
-    type = "volume"
+    [hot_corners.top_left]
+    action = "launcher"
 
-[hot_corners.bottom_left]
-action = "window_switcher"
+    [hot_corners.top_right]
+    action = "control_center"
 
-[hot_corners.bottom_right]
-action = "window_switcher"
+[idle]
+behavior_order = [ "lock", "screen-off", "lock-and-suspend" ]
+pre_action_fade_seconds = 2.0
+
+[location]
+address = "Ambarnath, India"
+auto_locate = true
+
+[lockscreen]
+allow_empty_password = false
+blur_intensity = 0.65
+blurred_desktop = true
+edge_smoothness = 0.3
+enabled = true
+fingerprint = true
+lock_before_suspend = true
+transition = [ "fade", "wipe", "disc", "zoom" ]
+transition_duration = 1200.0
 
 [lockscreen_widgets]
-enabled = false
+enabled = true
 schema_version = 2
 widget_order = [ "lockscreen-login-box@HDMI-A-1" ]
 
     [lockscreen_widgets.grid]
-    cell_size = 16
-    major_interval = 4
-    visible = true
+    visible = false
 
     [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1"]
     box_height = 196.0
     box_width = 810.0
     cx = 960.0
     cy = 898.0
+    enabled = true
     output = "HDMI-A-1"
     placement_height = 1080.0
     placement_width = 1920.0
-    rotation = 0.0
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
-        background_radius = 12.0
-        center_password_text = false
-        input_opacity = 1.0
-        input_radius = 6.0
-        layout = "regular"
-        show_caps_lock = true
-        show_keyboard_layout = true
-        show_login_button = true
-        show_media = true
-        show_password_reveal = true
-        show_session_buttons = true
-        show_unlock_hint = true
         show_weather = true
+        show_media = true
+
+[nightlight]
+enabled = true
+temperature_day = 6500
+temperature_night = 3800
+
+[notification]
+background_opacity = 0.97
+border = true
+border_color = "outline_variant"
+border_width = 1.0
+position = "top_right"
+
+[osd]
+enabled = true
+position = "top_center"
+
+[plugins]
+auto_update = "all"
+enabled = [
+    "yuuto/arch-updater",
+    "noctalia/bongocat",
+    "michael-retunzew/hyprland-settings",
+    "kenn/keybind-cheatsheet",
+    "mera/localsend",
+    "zhangdm/als-brightness",
+    "cleboost/zed-provider",
+    "notfinaldev/youtube-search",
+    "notfinaldev/web-search",
+    "nilsonlinux/world-radio",
+    "umedbazarov/webapp-maker",
+    "yangkx/usbeehive",
+    "noctalia/wallhaven",
+    "noctalia/mpvpaper"
+]
+
+[plugin_settings."yuuto/arch-updater"]
+show_activity_graph = true
+
+[plugin_settings."noctalia/wallhaven"]
+api_key = "z46rjtnB16fk70FkABC3lAC2WozU4WWi"
+download_dir = "/home/tejasvishwasgosavi/wallpaper"
+
+[plugin_settings."noctalia/mpvpaper"]
+video_directory = "/home/tejasvishwasgosavi/Videos/Wallpapers"
+mute = true
 
 [shell]
-screen_time_enabled = true
-telemetry_enabled = true
+app_icon_colorize = true
+button_borders = true
+card_borders = true
+corner_radius_scale = 1.25
+font_family = "JetBrainsMono Nerd Font"
+input_borders = true
+polkit_agent = true
+popup_borders = true
+popup_shadows = true
+settings_expand_all_groups = true
+settings_show_advanced = true
+settings_window_translucent = true
 
-    [shell.greeter_sync]
-    auto_sync = true
+    [shell.animation]
+    enabled = true
+    speed = 1.0
 
-    [shell.launcher.providers.emoji]
-    global = true
+    [shell.launcher]
+    layout = "full"
+    search_position = "top"
+    show_app_actions = true
+    show_icons = true
+    show_session_button = true
+    show_settings_button = true
+    width = 720
 
-    [shell.launcher.providers.panels]
-    global = true
+    [shell.panel]
+    border_color = "outline_variant"
+    border_width = 1.0
+    borders = true
+    floating_layer = "overlay"
+    floating_offset = 10
+    open_near_click_control_center = true
+    open_near_click_session = true
+    open_near_click_wallpaper = true
+    shadow = true
+    transparency_mode = "glass"
 
-    [shell.launcher.providers.session]
-    global = true
-
-    [shell.launcher.providers.wallpaper]
-    global = true
-
-    [shell.launcher.providers.windows]
-    global = true
+    [shell.screen_corners]
+    enabled = true
+    size = 16
 
     [shell.screenshot]
-    annotate = true
-    confirm_region = true
-    remember_last_region = true
-    skip_annotate_on_copy_save = true
+    copy_to_clipboard = true
+    directory = "/home/tejasvishwasgosavi/Pictures/Screenshots"
+    freeze_screen = true
+    save_to_file = true
 
-    [[shell.session.actions]]
-    action = "lock"
-    countdown_seconds = 10.0
-    enabled = true
-    shortcut = "KP_1"
-    variant = "default"
-
-    [[shell.session.actions]]
-    action = "logout"
-    countdown_seconds = 10.0
-    enabled = true
-    shortcut = "2"
-    variant = "default"
-
-    [[shell.session.actions]]
-    action = "lock_and_suspend"
-    countdown_seconds = 10.0
-    enabled = true
-    shortcut = "3"
-    variant = "default"
-
-    [[shell.session.actions]]
-    action = "reboot"
-    countdown_seconds = 10.0
-    enabled = true
-    shortcut = "4"
-    variant = "default"
-
-    [[shell.session.actions]]
-    action = "shutdown"
-    countdown_seconds = 10.0
-    enabled = true
-    shortcut = "5"
-    variant = "destructive"
-
-[theme.templates]
-builtin_ids = [
-    "alacritty",
-    "btop",
-    "cava",
-    "emacs",
-    "foot",
-    "gtk3",
-    "gtk4",
-    "ghostty",
-    "helix",
-    "hyprland",
-    "kcolorscheme",
-    "kitty",
-    "labwc",
-    "mango",
-    "niri",
-    "qt",
-    "scroll",
-    "starship",
-    "sway",
-    "umbriel",
-    "wezterm"
-]
-enable_builtin_templates = true
-enable_community_templates = true
+[theme]
+builtin = "Nord"
+mode = "dark"
+pure_black_dark = true
+source = "builtin"
+sync_color_scheme = true
 
 [wallpaper]
-directory = "/home/tejasvishwasgosavi/wallpaper"
-transition = [ "disc", "fade", "honeycomb", "stripes", "wipe", "zoom" ]
+directory = "/home/tejasvishwasgosavi/wallpaper/"
+enabled = true
+fill_mode = "crop"
+transition = [ "fade", "wipe", "disc", "zoom" ]
+transition_duration = 1200.0
+transition_on_startup = true
 
     [wallpaper.automation]
     enabled = true
-    interval_seconds = 60
+    interval_seconds = 120
+    order = "random"
     recursive = true
 
-    [wallpaper.default]
-    path = "/home/tejasvishwasgosavi/wallpaper/sunset-in-thick-forest.jpg"
+[weather]
+effects = true
+enabled = true
+refresh_minutes = 5
+unit = "metric"
 
-    [wallpaper.last]
-    path = "/home/tejasvishwasgosavi/wallpaper/sunset-in-thick-forest.jpg"
+[widget.cpu]
+stat = "cpu_usage"
+visualization = "gauge"
+show_value = true
+label_min_width = 36.0
+type = "sysmon"
 
-    [wallpaper.monitors.HDMI-A-1]
-    path = "/home/tejasvishwasgosavi/wallpaper/sunset-in-thick-forest.jpg"
+[widget.gpu]
+stat = "gpu_usage"
+visualization = "gauge"
+show_value = true
+label_min_width = 36.0
+type = "sysmon"
+
+[widget.ram]
+stat = "ram_pct"
+visualization = "gauge"
+show_value = true
+label_min_width = 36.0
+type = "sysmon"
+
+[widget.disk]
+stat = "disk_used_pct"
+path = "/"
+visualization = "gauge"
+show_value = true
+label_min_width = 36.0
+type = "sysmon"
+
+[widget.bongocat]
+type = "noctalia/bongocat:cat"
+
+[widget.wallhaven]
+type = "noctalia/wallhaven:wallhaven"
+
+[widget.mpvpaper]
+type = "noctalia/mpvpaper:mpvpaper"
+
+[widget.arch_updater]
+type = "yuuto/arch-updater:widget"
+
+[widget.localsend]
+type = "mera/localsend:widget"
+
+[widget.keybinds_help]
+type = "kenn/keybind-cheatsheet:keybinds"
